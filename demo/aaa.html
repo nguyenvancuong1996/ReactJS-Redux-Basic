@@ -1,0 +1,114 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+    <%@include file="header.jsp"%>
+        <div class="container">
+        <h4 class="text-primary">Them Moi Lop</h4>
+        <hr/>
+            <form method="POST" action="<c:url value='/lop/addLop'/>" id="form">
+                <div class="form-group">
+                    <label><strong>Ma Lop</strong></label> <input type="text" name="malop" id="malop_d"  class="form-control" aria-describedby="helpId" autocomplete="off"> <small id="checkmadv" class="text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label><strong>Ten GV1</strong></label> <input type="text" name="tengv1" class="form-control"  aria-describedby="helpId" autocomplete="off"> <small id="checkmm" class="text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label><strong>Ten GV2</strong></label> <input type="text" name="tengv2"  class="form-control" aria-describedby="helpId" autocomplete="off"> <small id="checkdongia" class="text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label><strong>Ten Lop</strong></label> <input type="text" name="tenlop"  class="form-control" aria-describedby="helpId" autocomplete="off"> <small id="checkmm" class="text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label><strong>So Luong Tre</strong></label> <input type="number" name="sltre" id="sltre_d"  class="form-control"  aria-describedby="helpId" autocomplete="off"><small id="checkmm_sltre" class="text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label><strong>Ngay Khai Giang</strong></label> <input type="date" name="ngaykg" id="ngaykg"  class="form-control" aria-describedby="helpId" autocomplete="off"> <small id="checkmm" class="text-danger"></small>
+                </div>
+                 <div class="form-group">
+                    <label><strong>Ngay Be Giang</strong></label> <input type="date" name="ngaybg" id="ngaybg" class="form-control" placeholder="Don Vi Tinh" aria-describedby="helpId" autocomplete="off"> <small id="checkmm" class="text-danger"></small>
+                </div>
+                <button type="submit" class="btn btn-primary" name="submit">Save</button>
+            </form>
+        </div>
+        </div>
+        <script>
+	$(document).ready(function() {
+			$(document).ready(function(){
+				$("#malop_d").change(function(e) {
+					e.preventDefault();
+					checkMaLop();
+				});
+				$("#ngaykg").change(function(e) {
+					e.preventDefault();
+					checkDate();
+				});
+				$("#ngaybg").change(function(e) {
+					e.preventDefault();
+					checkDate();
+				});
+				 $("#sltre_d").change(function() {
+					 checkSLTRE();
+	                });
+			    $("#form").validate({
+			        rules: {
+			        	malop: "required",
+			        	tengv1: "required",
+			        	tengv2: "required",
+			        	tenlop: "required",
+			        	sltre: "required",
+			        	ngaykg: "required",
+				        ngaybg: "required"
+			        },
+			        messages: {
+			        	malop:"Bạn vui lòng nhập vào trường dữ liệu này.",
+			        	tengv1:"Bạn vui lòng nhập vào trường dữ liệu này.",
+			        	tengv2:"Bạn vui lòng nhập vào trường dữ liệu này.",
+			        	tenlop:"Bạn vui lòng nhập vào trường dữ liệu này.",
+			        	sltre:"Bạn vui lòng nhập vào trường dữ liệu này.",
+			        	ngaykg:"Bạn vui lòng nhập vào trường dữ liệu này.",
+			        	ngaybg:"Bạn vui lòng nhập vào trường dữ liệu này.",
+			        },
+			        errorClass: "my-error-class",
+			        validClass: "my-valid-class"
+			    });
+			});
+	});
+	function checkSLTRE() {
+        var value = parseInt($("#sltre_d").val());
+        if (value >=0 && value <= 50) {
+        	$("#checkmm_sltre").html("OK");
+        } else {
+        	$("#checkmm_sltre").html("");
+        	Swal.fire('Thông báo !', 'So Luong Tre La So Nguyen Duong Nho Hon 50 !!!', 'warning');
+        }
+    }
+	function checkMaLop() {
+		var data = $("#malop_d").val();
+		$.ajax({
+			type : "GET",
+			url : "${pageContext.request.contextPath}/lop/CheckMaLop",
+			contentType : "text/plain",
+			data : {
+				data : data,
+			},
+			success : function(response) {
+				if (response == "Fail") {
+					Swal.fire('Thông báo !', 'Ma Lop '+data+' da ton tai', 'warning');
+					$(':input[type="submit"]').prop('disabled', true);
+				}
+				if (response == "Ok") {
+					$(':input[type="submit"]').prop('disabled', false);
+				}
+			}
+		});
+	}
+	function checkDate() {
+        var dateKG = new Date($("#ngaykg").val());
+        var dateBG = new Date($("#ngaybg").val());
+        if (dateBG < dateKG) {
+        	Swal.fire('Thông báo !', 'Ngay Be Giang Lon Hon Ngay Khai Giang !!! ', 'warning');
+			$(':input[type="submit"]').prop('disabled', true);
+        } else {
+            $(':input[type="submit"]').prop('disabled', false);
+        }
+    }
+	</script>
+        <%@include file="footer.jsp"%>
